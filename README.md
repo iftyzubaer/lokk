@@ -14,7 +14,7 @@ Lokk is a real-time study app where you create or join study rooms, run Pomodoro
 
 ## Status
 
-In active development. Follow the build on [Instagram](https://instagram.com/iftyzubaer) / [TikTok](https://tiktok.com/@iftyzubaer): @iftyzibaer
+In active development. Follow the build on [Instagram](https://instagram.com/iftyzubaer) / [TikTok](https://tiktok.com/@iftyzubaer): @iftyzubaer
 
 ## Running locally
 
