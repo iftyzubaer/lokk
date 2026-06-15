@@ -14,18 +14,18 @@ Lokk is a real-time study app where you create or join study rooms, run Pomodoro
 
 ## Status
 
-In active development. Follow the build on Instagram / TikTok: @lokkapp
+In active development. Follow the build on [Instagram](https://instagram.com/iftyzubaer) / [TikTok](https://tiktok.com/@iftyzubaer): @iftyzibaer
 
 ## Running locally
 
-\`\`\`bash
+```bash
 git clone https://github.com/YOUR_USERNAME/lokk
 cd lokk
 npm install
 cp .env.example .env.local
 # fill in your env vars — see .env.example for all required keys
 npm run dev
-\`\`\`
+```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
