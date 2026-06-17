@@ -10,3 +10,81 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  avatarUrl    String?
+  xp           Int       @default(0)
+  streakCount  Int       @default(0)
+  lastActive   DateTime?
+  createdAt    DateTime  @default(now())
+
+  hostedRooms  Room[]            @relation("RoomHost")
+  participants RoomParticipant[]
+  sessions     Session[]
+  messages     Message[]
+}
+
+model Room {
+  id           String   @id @default(uuid())
+  hostId       String
+  name         String
+  subject      String?
+  isPublic     Boolean  @default(true)
+  status       String   @default("waiting")
+  createdAt    DateTime @default(now())
+
+  host         User              @relation("RoomHost", fields: [hostId], references: [id])
+  participants RoomParticipant[]
+  sessions     Session[]
+  messages     Message[]
+}
+
+model RoomParticipant {
+  id        String    @id @default(uuid())
+  roomId    String
+  userId    String
+  joinedAt  DateTime  @default(now())
+  leftAt    DateTime?
+
+  room      Room      @relation(fields: [roomId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model Session {
+  id               String    @id @default(uuid())
+  userId           String
+  roomId           String
+  durationMinutes  Int
+  xpEarned         Int
+  startedAt        DateTime
+  endedAt          DateTime
+
+  user             User       @relation(fields: [userId], references: [id])
+  room             Room       @relation(fields: [roomId], references: [id])
+  pomodoros        Pomodoro[]
+}
+
+model Pomodoro {
+  id            String   @id @default(uuid())
+  sessionId     String
+  workMinutes   Int      @default(25)
+  breakMinutes  Int      @default(5)
+  status        String   @default("running")
+  startedAt     DateTime @default(now())
+
+  session       Session  @relation(fields: [sessionId], references: [id])
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  roomId    String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  room      Room     @relation(fields: [roomId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
