@@ -20,16 +20,28 @@ export default async function Home() {
           </form>
         </div>
       ) : (
-        <form
-          action={async () => {
-            "use server";
-            await signIn("github");
-          }}
-        >
-          <button type="submit" className="rounded-md bg-black px-4 py-2 text-white">
-            Sign in with GitHub
-          </button>
-        </form>
+        <div className="flex flex-col gap-3">
+          <form
+            action={async () => {
+              "use server";
+              await signIn("github");
+            }}
+          >
+            <button type="submit" className="rounded-md bg-black px-4 py-2 text-white">
+              Sign in with GitHub
+            </button>
+          </form>
+          <form
+            action={async () => {
+              "use server";
+              await signIn("google");
+            }}
+          >
+            <button type="submit" className="rounded-md bg-blue-600 px-4 py-2 text-white">
+              Sign in with Google
+            </button>
+          </form>
+        </div>
       )}
     </main>
   );
