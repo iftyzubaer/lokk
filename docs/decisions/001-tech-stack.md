@@ -36,3 +36,11 @@ Vercel's serverless functions do not support persistent connections. Pusher hand
 Provides GitHub and Google OAuth in ~1 day of setup. Includes a Prisma adapter that automatically creates and retrieves USER records on login.
 
 **Trade-off accepted:** NextAuth v5 App Router docs are still maturing.
+
+---
+
+## Addendum — Session model naming (Week 2)
+
+NextAuth's Prisma adapter requires a model literally named `Session` for its own session storage (database-backed sessions, one row per active login). Lokk's existing `Session` model — tracking study sessions — was renamed to `StudySession` to avoid the collision.
+
+This was decided before any application code referenced the old name, so the rename had no downstream impact. `Account` and `VerificationToken` models were also added, both required by NextAuth's Prisma adapter — `Account` links a user to their OAuth provider identity, `VerificationToken` supports email-based verification flows (currently unused, since Lokk is OAuth-only).
