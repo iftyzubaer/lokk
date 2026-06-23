@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import CreateRoomForm from "@/components/create-room-form";
 
 export default async function DashboardPage() {
@@ -20,6 +21,13 @@ export default async function DashboardPage() {
         <h2 className="text-lg font-medium">Create a room</h2>
         <CreateRoomForm />
       </div>
+
+      <Link
+        href="/rooms"
+        className="text-sm text-gray-500 underline"
+      >
+        Browse study rooms
+      </Link>
 
       <form
         action={async () => {
