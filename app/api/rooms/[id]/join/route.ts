@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { pusherServer } from "@/lib/pusher-server";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteParams {
@@ -52,6 +53,12 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       roomId: id,
       userId: user.id,
     },
+  });
+
+  await pusherServer.trigger(`room-${id}`, "user-joined", {
+    id: user.id,
+    name: user.name,
+    image: user.image,
   });
 
   return NextResponse.json(participant, { status: 201 });
