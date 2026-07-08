@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
+import LeaveRoomButton from "@/components/leave-room-button";
 
 interface RoomPageProps {
   params: Promise<{ id: string }>;
@@ -57,6 +58,10 @@ export default async function RoomPage({ params }: RoomPageProps) {
           <p className="text-xs text-gray-400 mt-1">
             Hosted by {room.host.name} · {room.status}
           </p>
+        </div>
+
+        <div className="flex justify-end w-full">
+          <LeaveRoomButton roomId={room.id} />
         </div>
 
         {/* Participant list */}
