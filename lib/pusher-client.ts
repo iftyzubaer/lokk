@@ -1,6 +1,7 @@
 "use client";
 
-import PusherClient from "pusher-js";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const PusherClient = require("pusher-js");
 
 export const pusherClient = new PusherClient(
   process.env.NEXT_PUBLIC_PUSHER_KEY!,
