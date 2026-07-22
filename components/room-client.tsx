@@ -19,8 +19,12 @@ export default function RoomClient({
   roomId,
   initialParticipants,
 }: RoomClientProps) {
-  const [participants, setParticipants] =
-    useState<Participant[]>(initialParticipants);
+  const [participants, setParticipants] = useState<Participant[]>(
+    initialParticipants.filter(
+      (p, index, self) => index === self.findIndex((t) => t.id === p.id)
+    )
+  );
+    
 
   useEffect(() => {
     const channel = pusherClient.subscribe(`room-${roomId}`);
