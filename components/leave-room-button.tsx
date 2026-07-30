@@ -11,13 +11,21 @@ export default function LeaveRoomButton({ roomId }: { roomId: string }) {
     setLoading(true);
 
     try {
-      await fetch(`/api/rooms/${roomId}/leave`, {
+      const res = await fetch(`/api/rooms/${roomId}/leave`, {
         method: "POST",
       });
 
-      router.push("/rooms");
+      const data = await res.json();
+
+      if (res.ok && data.durationMinutes !== undefined) {
+        router.push(
+          `/rooms?sessionEnd=true&duration=${data.durationMinutes}&xp=${data.xpEarned}`
+        );
+      } else {
+        router.push("/rooms");
+      }
     } catch {
-      console.error("Failed to leave room");
+      router.push("/rooms");
     } finally {
       setLoading(false);
     }
