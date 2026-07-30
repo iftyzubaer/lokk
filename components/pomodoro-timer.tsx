@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { pusherClient } from "@/lib/pusher-client";
 
 type Phase = "work" | "break";
+
+interface TimerUpdate {
+  action: "start" | "pause" | "reset";
+  phase: Phase;
+  secondsLeft: number;
+}
 
 interface PomodoroTimerProps {
   roomId: string;
@@ -20,6 +27,33 @@ export default function PomodoroTimer({
   const [secondsLeft, setSecondsLeft] = useState(WORK_SECONDS);
   const [running, setRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isBroadcasting = useRef(false);
+
+  useEffect(() => {
+    const channel = pusherClient.subscribe(`room-${roomId}`);
+
+    channel.bind("timer-update", (data: TimerUpdate) => {
+      if (isBroadcasting.current) return;
+
+      if (data.action === "start") {
+        setPhase(data.phase);
+        setSecondsLeft(data.secondsLeft);
+        setRunning(true);
+      } else if (data.action === "pause") {
+        setSecondsLeft(data.secondsLeft);
+        setRunning(false);
+      } else if (data.action === "reset") {
+        setRunning(false);
+        setPhase("work");
+        setSecondsLeft(WORK_SECONDS);
+      }
+    });
+
+    return () => {
+      channel.unbind("timer-update");
+      pusherClient.unsubscribe(`room-${roomId}`);
+    };
+  }, [roomId]);
 
   useEffect(() => {
     if (running) {
@@ -55,18 +89,33 @@ export default function PomodoroTimer({
     };
   }, [running, phase]);
 
+  async function broadcast(action: "start" | "pause" | "reset") {
+    isBroadcasting.current = true;
+    await fetch(`/api/rooms/${roomId}/timer`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, phase, secondsLeft }),
+    });
+    setTimeout(() => {
+      isBroadcasting.current = false;
+    }, 100);
+  }
+
   function handleStart() {
     setRunning(true);
+    broadcast("start");
   }
 
   function handlePause() {
     setRunning(false);
+    broadcast("pause");
   }
 
   function handleReset() {
     setRunning(false);
     setPhase("work");
     setSecondsLeft(WORK_SECONDS);
+    broadcast("reset");
   }
 
   const minutes = Math.floor(secondsLeft / 60);
@@ -94,7 +143,6 @@ export default function PomodoroTimer({
         {display}
       </p>
 
-      {/* Progress bar */}
       <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-1000 ${
