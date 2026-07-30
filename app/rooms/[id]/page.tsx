@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import LeaveRoomButton from "@/components/leave-room-button";
 import RoomClient from "@/components/room-client";
 import RoomChat from "@/components/room-chat";
+import PomodoroTimer from "@/components/pomodoro-timer";
 
 interface RoomPageProps {
   params: Promise<{ id: string }>;
@@ -106,6 +107,9 @@ export default async function RoomPage({ params }: RoomPageProps) {
           roomId={room.id}
           initialParticipants={initialParticipants}
         />
+
+        {/* Pomodoro timer */}
+        <PomodoroTimer roomId={room.id} />
 
         {/* Chat panel */}
         <RoomChat
