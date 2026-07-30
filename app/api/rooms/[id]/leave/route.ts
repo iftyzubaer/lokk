@@ -39,14 +39,39 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     );
   }
 
-  await prisma.roomParticipant.update({
-    where: { id: participant.id },
-    data: { leftAt: new Date() },
-  });
+  const now = new Date();
+  const durationMinutes = Math.floor(
+    (now.getTime() - participant.joinedAt.getTime()) / 60000
+  );
+  const xpEarned = durationMinutes;
+
+  await prisma.$transaction([
+    prisma.roomParticipant.update({
+      where: { id: participant.id },
+      data: { leftAt: now },
+    }),
+    prisma.studySession.create({
+      data: {
+        userId: user.id,
+        roomId: id,
+        durationMinutes,
+        xpEarned,
+        startedAt: participant.joinedAt,
+        endedAt: now,
+      },
+    }),
+    prisma.user.update({
+      where: { id: user.id },
+      data: { xp: { increment: xpEarned } },
+    }),
+  ]);
 
   await pusherServer.trigger(`room-${id}`, "user-left", {
     id: user.id,
   });
 
-  return NextResponse.json({ message: "Left room" }, { status: 200 });
+  return NextResponse.json(
+    { message: "Left room", durationMinutes, xpEarned },
+    { status: 200 }
+  );
 }
